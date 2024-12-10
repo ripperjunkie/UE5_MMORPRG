@@ -7,6 +7,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "AbilitySystemInterface.h"
 #include "UE5_MMORPG/Interfaces/UE5_HeroInterface.h"
 
 #include "UE5_BaseHero.generated.h"
@@ -20,8 +21,9 @@ class USpringArmComponent;
 struct FInputActionInstance;
 
 UCLASS()
-class UE5_MMORPG_API AUE5_BaseHero : public ACharacter, public IUE5_HeroInterface
+class UE5_MMORPG_API AUE5_BaseHero : public ACharacter, public IUE5_HeroInterface, public IAbilitySystemInterface
 {
+private:
 	GENERATED_BODY()
 
 public:
@@ -39,7 +41,12 @@ public:
 	virtual void SwitchMappingContext(TSoftObjectPtr<UInputMappingContext> InputMappingContext) override;
 	
 #pragma endregion 
+
+#pragma region IAbilitySystemInterface Methods
 	
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	
+#pragma endregion 
 
 	// Input Actions
 	void Input_Movement(const FInputActionInstance &Instance);
@@ -86,7 +93,7 @@ public:
 
 #pragma region GAS
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="GAS", meta=(AllowPrivateAccess=true))
-	UAbilitySystemComponent* AbilitySystemComponent;
+	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="GAS")
 	const UUE5_AttributeBaseSet* AttributeBaseSet;
