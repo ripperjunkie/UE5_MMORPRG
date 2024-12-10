@@ -27,10 +27,11 @@ AUE5_BaseHero::AUE5_BaseHero()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-
 	ADD_COMPONENT(CameraComp, UCameraComponent, "Camera Component");
 	ADD_COMPONENT(SpringComp, USpringArmComponent, "Spring Arm Component");
-
+	ADD_COMPONENT(AbilitySystemComponent, UAbilitySystemComponent, "Ability System Component");
+	ADD_COMPONENT(AttributeBaseSet, UUE5_AttributeBaseSet, "Attribute Set");
+	
 	if(SpringComp)
 	{
 		SpringComp->SetupAttachment(GetRootComponent());
@@ -42,6 +43,9 @@ AUE5_BaseHero::AUE5_BaseHero()
 	}
 
 	MouseSensitivity = FVector2D(45.F,60.f);
+
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 }
 
 // Called when the game starts or when spawned
@@ -55,6 +59,7 @@ void AUE5_BaseHero::BeginPlay()
 	if(IsValid(AbilitySystemComponent))
 	{
 		AttributeBaseSet = AbilitySystemComponent->GetSet<UUE5_AttributeBaseSet>();
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	}
 }
 
@@ -97,6 +102,11 @@ void AUE5_BaseHero::SwitchMappingContext(TSoftObjectPtr<UInputMappingContext> In
 			}
 		}
 	}
+}
+
+UAbilitySystemComponent* AUE5_BaseHero::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
 }
 
 void AUE5_BaseHero::Input_Movement(const FInputActionInstance& Instance)
