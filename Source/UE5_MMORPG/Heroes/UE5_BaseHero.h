@@ -12,6 +12,8 @@
 
 #include "UE5_BaseHero.generated.h"
 
+class UCustomPawnData;
+class UCustomInputComponent;
 class UUE5_AttributeBaseSet;
 class UAbilitySystemComponent;
 class UInputAction;
@@ -35,6 +37,14 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	/** Gets the pawn data, which is used to specify pawn properties in data */
+	template <class T>
+	TObjectPtr<T> GetPawnData() const { return Cast<T>(PawnData); }
+
+	/** Gets the pawn data, which is used to specify pawn properties in data */
+	template <class T>
+	TObjectPtr<T> GetInputComponent() const { return Cast<T>(CustomInputComponent); }
 
 #pragma region IUE5_HeroInterface Methods
 	
@@ -102,8 +112,13 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
 	
-private:
+	/** Pawn data used to create the pawn. Specified from a spawn function or on a placed instance. */
+	UPROPERTY(EditInstanceOnly, Category = "Pawn")
+	TObjectPtr<const UCustomPawnData> PawnData;
+
+	/** Pawn data used to create the pawn. Specified from a spawn function or on a placed instance. */
+	UPROPERTY()
+	TObjectPtr<UCustomInputComponent> CustomInputComponent;
 	
 };
