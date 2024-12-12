@@ -18,7 +18,7 @@ UCLASS(Config = Input)
 class UE5_MMORPG_API UCustomInputComponent : public UEnhancedInputComponent
 {
 	GENERATED_BODY()
-	
+
 public:
 
 
@@ -54,21 +54,17 @@ public:
 
 		
 	void ProcessAbilityInput(float DeltaTime, bool bGamePaused);
-#pragma endregion InputFunctions
-
 	
+	void Input_Movement(const FInputActionInstance& Instance);
+	void Input_CameraControlMouse(const FInputActionInstance& Instance);
+
+#pragma endregion InputFunctions
+	
+	void SetupComponent();
 private:
 			
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
-	
-	/**
-	 * Initializes the component.  Occurs at level startup or actor spawn. This is before BeginPlay (Actor or Component).  
-	 * All Components in the level will be Initialized on load before any Actor/Component gets BeginPlay
-	 * Requires component to be registered, and bWantsInitializeComponent to be true.
-	 */
-	virtual void InitializeComponent() override;
-
 	
 };
 

@@ -12,6 +12,7 @@
 #include "InputMappingContext.h"
 
 #include "AbilitySystemComponent.h"
+#include "UE5_MMORPG/Components/CustomInputComponent.h"
 #include "UE5_MMORPG/GAS/Attributes/UE5_AttributeBaseSet.h"
 
 
@@ -31,6 +32,7 @@ AUE5_BaseHero::AUE5_BaseHero()
 	ADD_COMPONENT(SpringComp, USpringArmComponent, "Spring Arm Component");
 	ADD_COMPONENT(AbilitySystemComponent, UAbilitySystemComponent, "Ability System Component");
 	ADD_COMPONENT(AttributeBaseSet, UUE5_AttributeBaseSet, "Attribute Set");
+	ADD_COMPONENT(CustomInputComponent, UCustomInputComponent, "Input Component");
 	
 	if(SpringComp)
 	{
@@ -61,6 +63,8 @@ void AUE5_BaseHero::BeginPlay()
 		AttributeBaseSet = AbilitySystemComponent->GetSet<UUE5_AttributeBaseSet>();
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	}
+
+	CustomInputComponent->SetupComponent();
 }
 
 // Called every frame
@@ -73,19 +77,18 @@ void AUE5_BaseHero::Tick(float DeltaTime)
 void AUE5_BaseHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	
 	check(PlayerInputComponent);
-
-	if (UEnhancedInputComponent *Input = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		// Hero Input Actions
-		BIND_ACTION(Movement_IA, ETriggerEvent::Triggered, Input_Movement);
-		BIND_ACTION(Shoot_IA, ETriggerEvent::Triggered, Input_Shoot);
-		BIND_ACTION(Jump_IA, ETriggerEvent::Triggered, Input_Jump);
-		BIND_ACTION(Evade_IA, ETriggerEvent::Triggered, Input_Evade);
-		BIND_ACTION(Aim_IA, ETriggerEvent::Triggered, Input_Aim);
-		BIND_ACTION(MouseCameraControl_IA, ETriggerEvent::Triggered, Input_CameraControlMouse);
-	}
+	// if (UEnhancedInputComponent *Input = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	// {
+	// 	// Hero Input Actions
+	// 	BIND_ACTION(Movement_IA, ETriggerEvent::Triggered, Input_Movement);
+	// 	BIND_ACTION(Shoot_IA, ETriggerEvent::Triggered, Input_Shoot);
+	// 	BIND_ACTION(Jump_IA, ETriggerEvent::Triggered, Input_Jump);
+	// 	BIND_ACTION(Evade_IA, ETriggerEvent::Triggered, Input_Evade);
+	// 	BIND_ACTION(Aim_IA, ETriggerEvent::Triggered, Input_Aim);
+	// 	BIND_ACTION(MouseCameraControl_IA, ETriggerEvent::Triggered, Input_CameraControlMouse);
+	// }
 }
 
 void AUE5_BaseHero::SwitchMappingContext(TSoftObjectPtr<UInputMappingContext> InputMappingContext)
@@ -107,25 +110,6 @@ void AUE5_BaseHero::SwitchMappingContext(TSoftObjectPtr<UInputMappingContext> In
 UAbilitySystemComponent* AUE5_BaseHero::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
-}
-
-void AUE5_BaseHero::Input_Movement(const FInputActionInstance& Instance)
-{
-	FVector2D AxisValue = Instance.GetValue().Get<FVector2D>();
-	const FRotator Rotation = FRotator(0.F, GetControlRotation().Yaw, 0.F);
-	const FVector ForwardDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::Type::X);
-	AddMovementInput(ForwardDirection, AxisValue.X);
-
-	const FVector RightDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::Type::Y);
-	AddMovementInput(RightDirection, AxisValue.Y);
-}
-
-void AUE5_BaseHero::Input_CameraControlMouse(const FInputActionInstance& Instance)
-{
-	FVector2D AxisValue = Instance.GetValue().Get<FVector2D>();
-
-	AddControllerPitchInput(AxisValue.Y * GetWorld()->DeltaTimeSeconds * MouseSensitivity.Y);
-	AddControllerYawInput(AxisValue.X * GetWorld()->DeltaTimeSeconds * MouseSensitivity.X);
 }
 
 void AUE5_BaseHero::Input_Shoot(const FInputActionInstance& Instance)

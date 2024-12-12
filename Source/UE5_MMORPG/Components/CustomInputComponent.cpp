@@ -6,8 +6,10 @@
 #include "AbilitySystemComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "UE5_MMORPG/GAS/CustomGameplayAbility.h"
+#include "UE5_MMORPG/GAS/DataAssets/AbilitySet.h"
 #include "UE5_MMORPG/Heroes/UE5_BaseHero.h"
 #include "UE5_MMORPG/Heroes/DataAssets/CustomPawnData.h"
+#include "UserSettings/EnhancedInputUserSettings.h"
 
 class UInputConfig;
 
@@ -16,6 +18,7 @@ class UInputConfig;
 // Sets default values for this component's properties
 UCustomInputComponent::UCustomInputComponent(const FObjectInitializer& ObjectInitializer)
 {
+	bWantsInitializeComponent=true;
 }
 
 void UCustomInputComponent::AddInputMappings(const UInputConfig* InputConfig, UEnhancedInputLocalPlayerSubsystem* InputSubsystem) const
@@ -76,10 +79,8 @@ void  UCustomInputComponent::Input_AbilityInputTagReleased(FGameplayTag InputTag
 }
 
 
-void UCustomInputComponent::InitializeComponent()
+void UCustomInputComponent::SetupComponent()
 {
-	Super::InitializeComponent();
-
 	TObjectPtr<AUE5_BaseHero> Owner = Cast<AUE5_BaseHero>(GetOwner());
 	check(Owner);
 	Owner->InputComponent = this;
@@ -106,6 +107,18 @@ void UCustomInputComponent::InitializeComponent()
 		{
 			if(TObjectPtr<UInputConfig> InputConfig = PawnData->InputConfig)
 			{
+				UEnhancedInputUserSettings* Settings = Subsystem->GetUserSettings();
+				FModifyContextOptions Options = {};
+				Options.bIgnoreAllPressedKeysUntilRelease = false;
+				for (UInputMappingContext* IMC : InputConfig->DefaultInputMappings)
+				{
+					if (Settings)
+					{
+						Settings->RegisterInputMappingContext(IMC);
+					}
+
+					Subsystem->AddMappingContext(IMC, 1, Options);
+				}
 				// Add the key mappings that may have been set by the player
 				AddInputMappings(InputConfig, Subsystem);
 
@@ -115,7 +128,21 @@ void UCustomInputComponent::InitializeComponent()
 				TArray<uint32> BindHandles;
 
 				BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
+
+				BindNativeAction(InputConfig, FGameplayTag::RequestGameplayTag("InputTag.Movement.Move"), ETriggerEvent::Triggered, this, &ThisClass::Input_Movement, /*bLogIfNotFound=*/ false);
+				BindNativeAction(InputConfig, FGameplayTag::RequestGameplayTag("InputTag.Mouse.CameraMovement"), ETriggerEvent::Triggered, this, &ThisClass::Input_CameraControlMouse, /*bLogIfNotFound=*/ false);
+				
+				
 			}
+
+
+			// We grant the default abilities here
+			TArray<TObjectPtr<UAbilitySet>> AbilitiesToGrant = PawnData->AbilitySets;
+			for (TObjectPtr<UAbilitySet> AbilitySet : AbilitiesToGrant)
+				{
+					AbilitySet->GiveToAbilitySystem(AbilitySystemComponent);
+				}
+			
 		}
 	}
 }
@@ -141,7 +168,10 @@ void UCustomInputComponent::ProcessAbilityInput(float DeltaTime, bool bGamePause
 			{
 				const UCustomGameplayAbility* AbilityCDO = CastChecked<UCustomGameplayAbility>(AbilitySpec->Ability);
 				if(AbilityCDO->GetActivationPolicy() == EAbilityActivationPolicy::WhileInputActive)
-				AbilitiesToActivate.AddUnique(AbilitySpec->Handle);
+				{
+					AbilitiesToActivate.AddUnique(AbilitySpec->Handle);
+				}
+				
 			}
 		}
 	}
@@ -212,4 +242,35 @@ void UCustomInputComponent::ProcessAbilityInput(float DeltaTime, bool bGamePause
 	InputReleasedSpecHandles.Reset();
 }
 
+void UCustomInputComponent::Input_Movement(const FInputActionInstance& Instance)
+{
+	if (APawn* Owner = GetOwner<APawn>())
+	{
+		if(AController* Controller =  Owner->GetController())
+		{
+			
+			FVector2D AxisValue = Instance.GetValue().Get<FVector2D>();
+			const FRotator Rotation = FRotator(0.F, Controller->GetControlRotation().Yaw, 0.F);
+			const FVector ForwardDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::Type::X);
+			Owner->AddMovementInput(ForwardDirection, AxisValue.X);
+
+			const FVector RightDirection = FRotationMatrix(Rotation).GetUnitAxis(EAxis::Type::Y);
+			Owner->AddMovementInput(RightDirection, AxisValue.Y);
+		}
+
+	}
+
+}
+
+void UCustomInputComponent::Input_CameraControlMouse(const FInputActionInstance& Instance)
+{
+	if (APawn* Owner = GetOwner<APawn>())
+	{
+			FVector2D AxisValue = Instance.GetValue().Get<FVector2D>();
+
+			Owner->AddControllerPitchInput(AxisValue.Y);
+			Owner->AddControllerYawInput(AxisValue.X);
+		
+	}
+}
 

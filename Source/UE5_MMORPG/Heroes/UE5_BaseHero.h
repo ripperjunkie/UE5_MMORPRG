@@ -114,7 +114,7 @@ protected:
 	virtual void BeginPlay() override;
 	
 	/** Pawn data used to create the pawn. Specified from a spawn function or on a placed instance. */
-	UPROPERTY(EditInstanceOnly, Category = "Pawn")
+	UPROPERTY(EditAnywhere, Category = "Pawn")
 	TObjectPtr<const UCustomPawnData> PawnData;
 
 	/** Pawn data used to create the pawn. Specified from a spawn function or on a placed instance. */
