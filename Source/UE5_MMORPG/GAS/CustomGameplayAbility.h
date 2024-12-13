@@ -14,7 +14,8 @@
 UENUM(BlueprintType)
 enum class EAbilityActivationPolicy : uint8
 {
-	// Try to activate the ability when the input is triggered.
+	
+	// Try to activate the ability when the input is triggered. Use Wait Input Pressed or Released nodes if you only want one trigger.
 	OnInputTriggered,
 
 	// Continually try to activate the ability while the input is active.

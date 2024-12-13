@@ -12,6 +12,7 @@
 
 #include "UE5_BaseHero.generated.h"
 
+class UCustomAbilitySystemComponent;
 class UCustomPawnData;
 class UCustomInputComponent;
 class UUE5_AttributeBaseSet;
@@ -31,7 +32,7 @@ private:
 public:
 	// Sets default values for this character's properties
 	AUE5_BaseHero();
-	
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -47,19 +48,19 @@ public:
 	TObjectPtr<T> GetInputComponent() const { return Cast<T>(CustomInputComponent); }
 
 #pragma region IUE5_HeroInterface Methods
-	
+
 	virtual void SwitchMappingContext(TSoftObjectPtr<UInputMappingContext> InputMappingContext) override;
-	
-#pragma endregion 
+
+#pragma endregion
 
 #pragma region IAbilitySystemInterface Methods
-	
+
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	
-#pragma endregion 
+
+#pragma endregion
 
 	// Input Actions
-	void Input_Movement(const FInputActionInstance &Instance);
+	void Input_Movement(const FInputActionInstance& Instance);
 	void Input_CameraControlMouse(const FInputActionInstance& Instance);
 	void Input_Shoot(const FInputActionInstance& Instance);
 	void Input_Jump(const FInputActionInstance& Instance);
@@ -68,7 +69,7 @@ public:
 
 	/************************** CHARACTER CONTROLS ******************************/
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input Action|Hero")
-	UInputAction* Movement_IA;	
+	UInputAction* Movement_IA;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input Action|Hero")
 	UInputAction* Jump_IA;
 
@@ -79,19 +80,19 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input Action|Hero")
 	UInputAction* Evade_IA;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input Action|Hero")
 	UInputAction* MouseCameraControl_IA;
 
 	/************************** ******************************/
 
-	/********************** Input Mapping Context  ******************************/	
+	/********************** Input Mapping Context  ******************************/
 	UPROPERTY(EditAnywhere, Category="Input")
 	TSoftObjectPtr<UInputMappingContext> HeroMappingContext;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Components)
 	TObjectPtr<UCameraComponent> CameraComp;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Components)
 	TObjectPtr<USpringArmComponent> SpringComp;
 
@@ -103,8 +104,8 @@ public:
 
 #pragma region GAS
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="GAS", meta=(AllowPrivateAccess=true))
-	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
-	
+	TObjectPtr<UCustomAbilitySystemComponent> AbilitySystemComponent;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="GAS")
 	const UUE5_AttributeBaseSet* AttributeBaseSet;
 #pragma endregion GAS
@@ -112,7 +113,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
+
 	/** Pawn data used to create the pawn. Specified from a spawn function or on a placed instance. */
 	UPROPERTY(EditAnywhere, Category = "Pawn")
 	TObjectPtr<const UCustomPawnData> PawnData;
@@ -120,5 +121,4 @@ protected:
 	/** Pawn data used to create the pawn. Specified from a spawn function or on a placed instance. */
 	UPROPERTY()
 	TObjectPtr<UCustomInputComponent> CustomInputComponent;
-	
 };

@@ -13,6 +13,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "UE5_MMORPG/Components/CustomInputComponent.h"
+#include "UE5_MMORPG/GAS/CustomAbilitySystemComponent.h"
 #include "UE5_MMORPG/GAS/Attributes/UE5_AttributeBaseSet.h"
 
 
@@ -30,7 +31,7 @@ AUE5_BaseHero::AUE5_BaseHero()
 
 	ADD_COMPONENT(CameraComp, UCameraComponent, "Camera Component");
 	ADD_COMPONENT(SpringComp, USpringArmComponent, "Spring Arm Component");
-	ADD_COMPONENT(AbilitySystemComponent, UAbilitySystemComponent, "Ability System Component");
+	ADD_COMPONENT(AbilitySystemComponent, UCustomAbilitySystemComponent, "Ability System Component");
 	ADD_COMPONENT(AttributeBaseSet, UUE5_AttributeBaseSet, "Attribute Set");
 	ADD_COMPONENT(CustomInputComponent, UCustomInputComponent, "Input Component");
 	
