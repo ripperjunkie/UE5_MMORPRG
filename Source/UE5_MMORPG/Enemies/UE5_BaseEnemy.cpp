@@ -1,35 +1,35 @@
-﻿$COPYRIGHT_LINE$
+﻿// @Big Moxi Engineers.
+// Author(s): Rafael Zagolin. Created on 11 December, 2024.
+// Contributor(s):
 
 
-$MY_HEADER_INCLUDE_DIRECTIVE$
+#include "UE5_BaseEnemy.h"
 
 
 // Sets default values
-$PREFIX$$UNPREFIXED_CLASS_NAME$::$PREFIX$$UNPREFIXED_CLASS_NAME$()
+AUE5_BaseEnemy::AUE5_BaseEnemy()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 // Called when the game starts or when spawned
-void $PREFIX$$UNPREFIXED_CLASS_NAME$::BeginPlay()
+void AUE5_BaseEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	$END$
+	
 }
 
 // Called every frame
-void $PREFIX$$UNPREFIXED_CLASS_NAME$::Tick(float DeltaTime)
+void AUE5_BaseEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
-// Called to bind functionality to input
-void $PREFIX$$UNPREFIXED_CLASS_NAME$::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+UAbilitySystemComponent* AUE5_BaseEnemy::GetAbilitySystemComponent() const
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	// TODO:
+	return nullptr;
 }
+
 
