@@ -63,6 +63,11 @@ void AUE5_BaseHero::BeginPlay()
 	{
 		AttributeBaseSet = AbilitySystemComponent->GetSet<UUE5_AttributeBaseSet>();
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+
+		for(TSubclassOf<UGameplayAbility> gasClass : DefaultAbilities)
+		{
+			AbilitySystemComponent->GiveAbility(gasClass);	
+		}		
 	}
 
 	CustomInputComponent->SetupComponent();

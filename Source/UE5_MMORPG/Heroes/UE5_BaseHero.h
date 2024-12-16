@@ -15,6 +15,7 @@
 class UCustomAbilitySystemComponent;
 class UCustomPawnData;
 class UCustomInputComponent;
+class UGameplayAbility;
 class UUE5_AttributeBaseSet;
 class UAbilitySystemComponent;
 class UInputAction;
@@ -103,11 +104,20 @@ public:
 	FVector2D MouseSensitivity;
 
 #pragma region GAS
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="GAS", meta=(AllowPrivateAccess=true))
 	TObjectPtr<UCustomAbilitySystemComponent> AbilitySystemComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="GAS")
 	const UUE5_AttributeBaseSet* AttributeBaseSet;
+
+	// Abilities that heroes should have by default (from start)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GAS")
+	TArray<TSubclassOf<UGameplayAbility> > DefaultAbilities;
+	
+
+
+	
 #pragma endregion GAS
 
 protected:
